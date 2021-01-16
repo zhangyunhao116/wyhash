@@ -24,7 +24,7 @@ func add(p unsafe.Pointer, x uintptr) unsafe.Pointer {
 	return unsafe.Pointer(uintptr(p) + x)
 }
 
-func Sum64(data []byte) uint64 {
+func Sum64Default(data []byte) uint64 {
 	var (
 		seed uint64 = s0
 		a, b uint64

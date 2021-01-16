@@ -49,15 +49,16 @@ func _wyfinish16(p []byte, length int, seed uint64) uint64 {
 			b = _wyr4(p[i-4:])
 		} else if i == 4 {
 			a = _wyr4(p)
-			// b = 0
+			b = 0
 		} else if i != 0 {
 			a = _wyr3(p, i)
-			// b = 0
+			b = 0
+		} else { // i == 0
+			a, b = 0, 0
 		}
-		// else a,b = 0,0
 	} else if i == 8 {
 		a = _wyr8(p)
-		// b = 0
+		b = 0
 	} else {
 		a = _wyr8(p)
 		b = _wyr8(p[i-8:])

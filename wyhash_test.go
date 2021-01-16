@@ -12,18 +12,18 @@ import (
 )
 
 func TestAll(t *testing.T) {
-	for size := 0; size <= 256; size++ {
+	for size := 0; size <= 257; size++ {
 		data := make([]byte, size)
 		for i := range data {
 			data[i] = byte(rand.Intn(256))
 		}
-		if Sum64(data) != wyhashfv1.Sum64fv1(data) {
-			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+		if Sum64Default(data) != wyhashfv1.Sum64fv1(data) {
+			t.Fatal(size, Sum64Default(data), wyhashfv1.Sum64fv1(data))
 		}
 	}
 }
 
-func BenchmarkCompare(b *testing.B) {
+func BenchmarkWyhash(b *testing.B) {
 	sizes := []int{17, 21, 24, 29, 32,
 		33, 64, 69, 96, 97, 128, 129, 240, 241,
 		512, 1024, 100 * 1024,
@@ -32,13 +32,15 @@ func BenchmarkCompare(b *testing.B) {
 	for size := 0; size <= 16; size++ {
 		b.Run(fmt.Sprintf("%d", size), func(b *testing.B) {
 			b.SetBytes(int64(size))
-			var acc uint64
-			d := string(make([]byte, size))
+			var (
+				acc  uint64
+				data = string(make([]byte, size))
+			)
 			b.ReportAllocs()
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(s2b(d))
+				acc = Sum64Default(s2b(data))
 			}
 			runtime.KeepAlive(acc)
 		})
@@ -53,7 +55,7 @@ func BenchmarkCompare(b *testing.B) {
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(s2b(d))
+				acc = Sum64Default(s2b(d))
 			}
 			runtime.KeepAlive(acc)
 		})
