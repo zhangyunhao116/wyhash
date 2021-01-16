@@ -17,8 +17,8 @@ func TestAll(t *testing.T) {
 		for i := range data {
 			data[i] = byte(rand.Intn(256))
 		}
-		if Sum64Default(data) != wyhashfv1.Sum64fv1(data) {
-			t.Fatal(size, Sum64Default(data), wyhashfv1.Sum64fv1(data))
+		if Sum64(data) != wyhashfv1.Sum64fv1(data) {
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
 		}
 	}
 }
@@ -40,7 +40,7 @@ func BenchmarkWyhash(b *testing.B) {
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64Default(s2b(data))
+				acc = Sum64(s2b(data))
 			}
 			runtime.KeepAlive(acc)
 		})
@@ -55,7 +55,7 @@ func BenchmarkWyhash(b *testing.B) {
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64Default(s2b(d))
+				acc = Sum64(s2b(d))
 			}
 			runtime.KeepAlive(acc)
 		})
