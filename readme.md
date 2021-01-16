@@ -14,7 +14,7 @@ package main
 import "github.com/zhangyunhao116/wyhash"
 
 func main() {
-	println(wyhash.Sum64Default([]byte("hello world!")))
+	println(wyhash.Sum64String("hello world!"))
 }
 
 ```
