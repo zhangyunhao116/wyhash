@@ -92,3 +92,20 @@ func Sum64fv1(p []byte) uint64 {
 	}
 	return _wyfinish(p, length, seed)
 }
+
+func Sum64fv1WithSeed(p []byte, seed uint64) uint64 {
+	length := len(p)
+	if len(p) > 64 {
+		var see1 = seed
+		for len(p) > 64 {
+			//   seed=_wymix(_wyr8(p)^secret[1], _wyr8(p+8)^seed)^_wymix(_wyr8(p+16)^secret[2], _wyr8(p+24)^seed);
+			//   see1=_wymix(_wyr8(p+32)^secret[3],_wyr8(p+40)^see1)^_wymix(_wyr8(p+48)^secret[4],_wyr8(p+56)^see1);
+			//   p+=64; i-=64;
+			seed = _wymix(_wyr8(p)^s1, _wyr8(p[8:])^seed) ^ _wymix(_wyr8(p[16:])^s2, _wyr8(p[24:])^seed)
+			see1 = _wymix(_wyr8(p[32:])^s3, _wyr8(p[40:])^see1) ^ _wymix(_wyr8(p[48:])^s4, _wyr8(p[56:])^see1)
+			p = p[64:]
+		}
+		seed ^= see1
+	}
+	return _wyfinish(p, length, seed)
+}

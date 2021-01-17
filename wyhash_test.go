@@ -3,21 +3,36 @@ package wyhash
 import (
 	"fmt"
 	"math/rand"
-	"reflect"
 	"runtime"
 	"testing"
-	"unsafe"
 
+	"github.com/zhangyunhao116/sbconv"
 	"github.com/zhangyunhao116/wyhash/wyhashfv1"
 )
 
-func TestAll(t *testing.T) {
+func TestOptimizedFunc(t *testing.T) {
 	for size := 0; size <= 257; size++ {
 		data := make([]byte, size)
 		for i := range data {
 			data[i] = byte(rand.Intn(256))
 		}
 		if Sum64(data) != wyhashfv1.Sum64fv1(data) {
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+		}
+		if Sum64String(sbconv.BytesToString(data)) != Sum64(data) {
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+		}
+	}
+}
+
+func TestOptimizedWithSeedFunc(t *testing.T) {
+	for size := 0; size <= 257; size++ {
+		data := make([]byte, size)
+		for i := range data {
+			data[i] = byte(rand.Intn(256))
+		}
+		seed := uint64(rand.Int63())
+		if Sum64WithSeed(data, seed) != wyhashfv1.Sum64fv1WithSeed(data, seed) {
 			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
 		}
 	}
@@ -40,7 +55,7 @@ func BenchmarkWyhash(b *testing.B) {
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(s2b(data))
+				acc = Sum64(sbconv.StringToBytes(data))
 			}
 			runtime.KeepAlive(acc)
 		})
@@ -55,18 +70,9 @@ func BenchmarkWyhash(b *testing.B) {
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(s2b(d))
+				acc = Sum64(sbconv.StringToBytes(d))
 			}
 			runtime.KeepAlive(acc)
 		})
 	}
-}
-
-func s2b(s string) (b []byte) {
-	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	sh := *(*reflect.StringHeader)(unsafe.Pointer(&s))
-	bh.Data = sh.Data
-	bh.Len = sh.Len
-	bh.Cap = sh.Len
-	return b
 }
