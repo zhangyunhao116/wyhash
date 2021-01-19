@@ -48,31 +48,31 @@ func BenchmarkWyhash(b *testing.B) {
 		b.Run(fmt.Sprintf("%d", size), func(b *testing.B) {
 			b.SetBytes(int64(size))
 			var (
-				acc  uint64
+				x    uint64
 				data = string(make([]byte, size))
 			)
 			b.ReportAllocs()
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(sbconv.StringToBytes(data))
+				x = Sum64String(data)
 			}
-			runtime.KeepAlive(acc)
+			runtime.KeepAlive(x)
 		})
 	}
 
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("%d", size), func(b *testing.B) {
 			b.SetBytes(int64(size))
-			var acc uint64
-			d := string(make([]byte, size))
+			var x uint64
+			data := string(make([]byte, size))
 			b.ReportAllocs()
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
-				acc = Sum64(sbconv.StringToBytes(d))
+				x = Sum64String(data)
 			}
-			runtime.KeepAlive(acc)
+			runtime.KeepAlive(x)
 		})
 	}
 }
