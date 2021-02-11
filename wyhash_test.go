@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/zhangyunhao116/sbconv"
-	"github.com/zhangyunhao116/wyhash/wyhashfv1"
+	"github.com/zhangyunhao116/wyhash/internal/wyhashfv1"
 )
 
 func TestOptimizedFunc(t *testing.T) {

@@ -3,6 +3,8 @@ package wyhash
 import (
 	"reflect"
 	"unsafe"
+
+	"github.com/zhangyunhao116/wyhash/internal/unalign"
 )
 
 type Digest struct {
@@ -66,8 +68,8 @@ func (d *Digest) Write(input []byte) (int, error) {
 		input = input[inputpre:] // free preceding data
 
 		paddr := unsafe.Pointer(&d.data)
-		d.seed = _wymix(_wyr8(paddr)^s1, _wyr8(add(paddr, 8))^d.seed) ^ _wymix(_wyr8(add(paddr, 16))^s2, _wyr8(add(paddr, 24))^d.seed)
-		d.see1 = _wymix(_wyr8(add(paddr, 32))^s3, _wyr8(add(paddr, 40))^d.see1) ^ _wymix(_wyr8(add(paddr, 48))^s4, _wyr8(add(paddr, 56))^d.see1)
+		d.seed = _wymix(unalign.Read8(paddr)^s1, unalign.Read8(add(paddr, 8))^d.seed) ^ _wymix(unalign.Read8(add(paddr, 16))^s2, unalign.Read8(add(paddr, 24))^d.seed)
+		d.see1 = _wymix(unalign.Read8(add(paddr, 32))^s3, unalign.Read8(add(paddr, 40))^d.see1) ^ _wymix(unalign.Read8(add(paddr, 48))^s4, unalign.Read8(add(paddr, 56))^d.see1)
 
 		d.length = 0 // free d.data, since it has been consumed
 	}
@@ -76,8 +78,8 @@ func (d *Digest) Write(input []byte) (int, error) {
 	seed, see1 := d.seed, d.see1
 	for len(input) > 64 {
 		paddr := *(*unsafe.Pointer)(unsafe.Pointer(&input))
-		seed = _wymix(_wyr8(paddr)^s1, _wyr8(add(paddr, 8))^seed) ^ _wymix(_wyr8(add(paddr, 16))^s2, _wyr8(add(paddr, 24))^seed)
-		see1 = _wymix(_wyr8(add(paddr, 32))^s3, _wyr8(add(paddr, 40))^see1) ^ _wymix(_wyr8(add(paddr, 48))^s4, _wyr8(add(paddr, 56))^see1)
+		seed = _wymix(unalign.Read8(paddr)^s1, unalign.Read8(add(paddr, 8))^seed) ^ _wymix(unalign.Read8(add(paddr, 16))^s2, unalign.Read8(add(paddr, 24))^seed)
+		see1 = _wymix(unalign.Read8(add(paddr, 32))^s3, unalign.Read8(add(paddr, 40))^see1) ^ _wymix(unalign.Read8(add(paddr, 48))^s4, unalign.Read8(add(paddr, 56))^see1)
 		input = input[64:]
 	}
 	d.seed, d.see1 = seed, see1
@@ -106,7 +108,7 @@ func (d *Digest) Sum64() uint64 {
 	)
 
 	for i > 16 {
-		seed = _wymix(_wyr8(paddr)^s1, _wyr8(add(paddr, 8))^seed)
+		seed = _wymix(unalign.Read8(paddr)^s1, unalign.Read8(add(paddr, 8))^seed)
 		paddr = add(paddr, 16)
 		i -= 16
 	}
@@ -120,20 +122,20 @@ func (d *Digest) Sum64() uint64 {
 		// b = 0
 		return _wymix(s1^uint64(length), _wymix(a^s1, seed))
 	case i == 4:
-		a = _wyr4(paddr)
+		a = unalign.Read4(paddr)
 		// b = 0
 		return _wymix(s1^uint64(length), _wymix(a^s1, seed))
 	case i < 8:
-		a = _wyr4(paddr)
-		b = _wyr4(add(paddr, i-4))
+		a = unalign.Read4(paddr)
+		b = unalign.Read4(add(paddr, i-4))
 		return _wymix(s1^uint64(length), _wymix(a^s1, b^seed))
 	case i == 8:
-		a = _wyr8(paddr)
+		a = unalign.Read8(paddr)
 		// b = 0
 		return _wymix(s1^uint64(length), _wymix(a^s1, seed))
 	default: // 8 < i <= 16
-		a = _wyr8(paddr)
-		b = _wyr8(add(paddr, i-8))
+		a = unalign.Read8(paddr)
+		b = unalign.Read8(add(paddr, i-8))
 		return _wymix(s1^uint64(length), _wymix(a^s1, b^seed))
 	}
 }
