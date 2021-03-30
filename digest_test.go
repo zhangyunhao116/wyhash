@@ -2,24 +2,35 @@ package wyhash
 
 import (
 	"fmt"
-	"math/rand"
 	"runtime"
 	"testing"
+
+	_ "unsafe" // for linkname
 )
+
+//go:linkname runtime_fastrand runtime.fastrand
+func runtime_fastrand() uint32
+
+//go:nosplit
+func fastrandn(n uint32) uint32 {
+	// This is similar to Uint32() % n, but faster.
+	// See https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
+	return uint32(uint64(runtime_fastrand()) * uint64(n) >> 32)
+}
 
 func TestDigest(t *testing.T) {
 	d := NewDefault()
 	for size := 0; size <= 1024; size++ {
 		data := make([]byte, size)
 		for i := range data {
-			data[i] = byte(rand.Intn(256))
+			data[i] = byte(fastrandn(256))
 		}
 		// Random write small data.
 		var r int
 		if size == 0 {
 			r = 0
 		} else {
-			r = rand.Intn(len(data))
+			r = int(fastrandn(uint32(len(data))))
 		}
 		d.Write(data[:r])
 		d.Write(data[r:])
@@ -31,7 +42,7 @@ func TestDigest(t *testing.T) {
 
 	largedata := make([]byte, 1024*1024)
 	for i := range largedata {
-		largedata[i] = byte(rand.Intn(255))
+		largedata[i] = byte(fastrandn(256))
 	}
 
 	var a, b int
@@ -41,7 +52,7 @@ func TestDigest(t *testing.T) {
 		if len(largedata)-a < 300 {
 			b = len(largedata) - a
 		} else {
-			b = rand.Intn(partsizelimit)
+			b = int(fastrandn(uint32(partsizelimit)))
 		}
 		digest.Write(largedata[a : a+b])
 		if Sum64(largedata[:a+b]) != digest.Sum64() {
