@@ -2,7 +2,7 @@
 
 A Go implementation of the 64-bit *wyhash* algorithm with a lot of optimizations. (final version 1)
 
-original C++ implementation: https://github.com/wangyi-fudan/wyhash/blob/master/wyhash_final1.h
+original C++ implementation: https://github.com/wangyi-fudan/wyhash
 
 
 
