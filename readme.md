@@ -1,6 +1,6 @@
 ## wyhash
 
-A Go implementation of the 64-bit *wyhash* algorithm with a lot of optimizations. (final version 1)
+A Go implementation of the 64-bit *wyhash* algorithm with a lot of optimizations. (final version 1 and final version 3)
 
 original C++ implementation: https://github.com/wangyi-fudan/wyhash
 
@@ -14,7 +14,8 @@ package main
 import "github.com/zhangyunhao116/wyhash"
 
 func main() {
-	println(wyhash.Sum64String("hello world!"))
+	println(wyhash.Sum64String("hello world!"))   // final version 1
+	println(wyhash.Sum64StringV3("hello world!")) // final version 3
 }
 
 ```
@@ -22,6 +23,8 @@ func main() {
 
 
 ## Benchmark
+
+Version: final version 1
 
 Go version: go1.15.6 linux/amd64
 

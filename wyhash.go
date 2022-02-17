@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	DefaultSeed = 0xa0761d6478bd642f // s0
-	s1          = 0xe7037ed1a0b428db
-	s2          = 0x8ebc6af09c88c6e3
-	s3          = 0x589965cc75374cc3
-	s4          = 0x1d8e4e27c47d124f
+	DefaultSeed uint64 = 0xa0761d6478bd642f // s0
+	s1          uint64 = 0xe7037ed1a0b428db
+	s2          uint64 = 0x8ebc6af09c88c6e3
+	s3          uint64 = 0x589965cc75374cc3
+	s4          uint64 = 0x1d8e4e27c47d124f
 )
 
 func _wymix(a, b uint64) uint64 {

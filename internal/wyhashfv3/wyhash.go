@@ -4,6 +4,7 @@ package wyhashfv3
 
 import (
 	"math/bits"
+	"reflect"
 	"unsafe"
 )
 
@@ -78,10 +79,19 @@ func Sum64WithSeed(p []byte, seed uint64) uint64 {
 		for len(p) > 16 {
 			// seed=_wymix(_wyr8(p)^secret[1],_wyr8(p+8)^seed);  i-=16; p+=16;
 			seed = _wymix(_wyr8(p)^s1, _wyr8(p[8:])^seed)
+			p = p[16:]
 		}
 		// a=_wyr8(p+i-16);  b=_wyr8(p+i-8);
-		a = _wyr8(p[len(p)-16:])
-		b = _wyr8(p[len(p)-8:])
+		// HACK
+		var ap, bp []byte
+		ph := (*reflect.SliceHeader)(unsafe.Pointer(&p))
+		aph := (*reflect.SliceHeader)(unsafe.Pointer(&ap))
+		bph := (*reflect.SliceHeader)(unsafe.Pointer(&bp))
+		aph.Cap, aph.Len, bph.Cap, bph.Len = 16, 16, 16, 16
+		aph.Data = uintptr(uint64(ph.Data) + uint64(len(p)) - 16)
+		bph.Data = uintptr(uint64(ph.Data) + uint64(len(p)) - 8)
+		a = _wyr8(ap)
+		b = _wyr8(bp)
 	}
 	return _wymix(s1^length, _wymix(a^s1, b^seed))
 }
