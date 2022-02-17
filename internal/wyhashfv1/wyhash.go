@@ -1,4 +1,4 @@
-// Package wyhashfv1 implements https://github.com/wangyi-fudan/wyhash/blob/master/wyhash_final1.h
+// Package wyhashfv1 implements wyhash final vesion 1.
 // DO NOT USE IT, for test only.
 package wyhashfv1
 
@@ -75,7 +75,7 @@ func _wyfinish(p []byte, length int, seed uint64) uint64 {
 	return _wyfinish(p[16:], length, _wymix(_wyr8(p)^s1, _wyr8(p[8:])^seed))
 }
 
-func Sum64fv1(p []byte) uint64 {
+func Sum64(p []byte) uint64 {
 	var seed uint64 = s0
 	length := len(p)
 	if len(p) > 64 {
@@ -93,7 +93,7 @@ func Sum64fv1(p []byte) uint64 {
 	return _wyfinish(p, length, seed)
 }
 
-func Sum64fv1WithSeed(p []byte, seed uint64) uint64 {
+func Sum64WithSeed(p []byte, seed uint64) uint64 {
 	length := len(p)
 	if len(p) > 64 {
 		var see1 = seed

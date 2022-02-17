@@ -16,11 +16,11 @@ func TestOptimizedFunc(t *testing.T) {
 		for i := range data {
 			data[i] = byte(rand.Intn(256))
 		}
-		if Sum64(data) != wyhashfv1.Sum64fv1(data) {
-			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+		if Sum64(data) != wyhashfv1.Sum64(data) {
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64(data))
 		}
 		if Sum64String(sbconv.BytesToString(data)) != Sum64(data) {
-			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64(data))
 		}
 	}
 }
@@ -32,8 +32,8 @@ func TestOptimizedWithSeedFunc(t *testing.T) {
 			data[i] = byte(rand.Intn(256))
 		}
 		seed := uint64(rand.Int63())
-		if Sum64WithSeed(data, seed) != wyhashfv1.Sum64fv1WithSeed(data, seed) {
-			t.Fatal(size, Sum64(data), wyhashfv1.Sum64fv1(data))
+		if Sum64WithSeed(data, seed) != wyhashfv1.Sum64WithSeed(data, seed) {
+			t.Fatal(size, Sum64(data), wyhashfv1.Sum64(data))
 		}
 	}
 }
